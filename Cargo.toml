@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 #groth = {path = "groth"}
 classgroup = {path = "classgroup"}
-criterion = "0.5.1"
+#criterion = "0.5.1"
 miracl_core_bls12381 = "4.1.2"
 bicycl = {path = "classgroup/supra-bicycl"}
 
