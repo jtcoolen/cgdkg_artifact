@@ -16,5 +16,5 @@ rand_chacha = "0.2.2"
 zeroize = { version = "1.4.3", features = ["zeroize_derive"] }
 
 [dev-dependencies]
-criterion = "0.3.4"
+criterion = "0.5.1"
 proptest = "1.0.0"
