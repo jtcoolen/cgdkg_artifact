@@ -3,6 +3,7 @@ use rand_chacha::{
     rand_core::{RngCore, SeedableRng},
     ChaCha20Rng,
 };
+//use rand_chacha::rand_core::RngCore;
 
 /// A random number generator based on the ChaCha20 stream cipher
 #[allow(non_camel_case_types)]
@@ -36,7 +37,15 @@ impl RAND for RAND_ChaCha20 {
     }
 }
 
-impl rand::RngCore for RAND_ChaCha20 {
+
+/*pub trait RngCore {
+    // Required methods
+    fn next_u32(&mut self) -> u32;
+    fn next_u64(&mut self) -> u64;
+    fn fill_bytes(&mut self, dst: &mut [u8]);
+}
+
+impl RngCore for RAND_ChaCha20 {
     fn next_u32(&mut self) -> u32 {
         self.chacha20.next_u32()
     }
@@ -49,13 +58,16 @@ impl rand::RngCore for RAND_ChaCha20 {
         self.chacha20.fill_bytes(dest);
     }
 
+}
+
+impl RAND_ChaCha20{
     fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand::Error> {
         match self.chacha20.try_fill_bytes(dest) {
             Ok(_) => Ok(()),
             Err(e) => Err(rand::Error::from(e.code().unwrap()))
         }
     }
-}
+}*/
 
 #[cfg(test)]
 mod tests {
