@@ -1,5 +1,5 @@
 //extern crate groth;
-extern crate classgroup;
+//extern crate classgroup;
 
 fn main() {
 
