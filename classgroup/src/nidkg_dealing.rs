@@ -78,13 +78,17 @@ pub fn aggregate_dealings(c: &CppBox<CLHSMqk>,
         &get_cgdkg_zk_share_g(&CG_DKG_STR.to_string())
     );
 
+    println!("BEFORE ACCU");
     for dealing in dealings {
         if accumulated_public_polynomial.coefficients.is_empty() {
+            println!("NOOOOO");
             accumulated_public_polynomial = dealing.public_coefficients.clone();
         } else {
+            println!("EXCELLENT");
             accumulated_public_polynomial += dealing.public_coefficients.clone();
         }
     }
+    println!("AFTER ACCU");
 
     let my_shares: Result<Vec<BIG>, ()> = dealings
         .iter()
