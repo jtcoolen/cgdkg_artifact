@@ -16,6 +16,8 @@ miracl_core_bls12381 = "4.1.2"
 rand_chacha = "0.2.2"
 zeroize = { version = "1.4.3", features = ["zeroize_derive"] }
 anyhow = "1.0.71"
+serde = {version = "1.0.203", features = ["derive"] }
+serde_nested_with = "0.2.5"
 
 
 [build-dependencies.ritual_build]

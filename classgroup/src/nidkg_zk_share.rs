@@ -1,4 +1,6 @@
 use std::ffi::c_ulong;
+use serde::{Serialize, Deserialize};
+use serde_nested_with::serde_nested;
 use cpp_core::{Ref, MutRef};
 use miracl_core_bls12381::{
     bls12381::{
@@ -27,15 +29,105 @@ pub fn get_cgdkg_zk_share_g(dkg_id: &dyn UniqueHash) -> ECP {
     return random_oracle_to_ecp(DOMAIN_CGDKG_ZK_SHARE_G, dkg_id);
 }
 
+fn ecp_tobytes<S>(v: &ECP, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let mut res = [0u8; 48];
+    v.tobytes(&mut res, true);
+
+    serializer.serialize_bytes(&res)
+}
+
+
+pub fn ecp_frombytes<'de, D>(deserializer: D) -> Result<ECP, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let buf = String::deserialize(deserializer)?;
+
+    Ok(ECP::frombytes(buf.as_bytes()))
+}
+
+fn qfi_to_bytes<S>(v: &QFIBox, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let res = unsafe { v.to_bytes() };
+
+    serializer.serialize_bytes(&res)
+}
+
+
+use crate::utils::get_cl;
+
+pub fn qfi_from_bytes<'de, D>(deserializer: D) -> Result<QFIBox, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let buf = String::deserialize(deserializer)?;
+
+    Ok(unsafe { QFIBox::from_bytes(buf.as_bytes(), &get_cl()).unwrap() })
+}
+
+fn pkb_tobytes<S>(v: &PublicKeyBox, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let res = unsafe { v.to_bytes() };
+
+    serializer.serialize_bytes(&res)
+}
+
+
+
+pub fn pkb_frombytes<'de, D>(deserializer: D) -> Result<PublicKeyBox, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let buf = String::deserialize(deserializer)?;
+
+    Ok(unsafe { PublicKeyBox::from_bytes(buf.as_bytes(), &get_cl()).unwrap() })
+}
+
+fn ctb_tobytes<S>(v: &CiphertextBox, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let res = unsafe { v.to_bytes() };
+
+    serializer.serialize_bytes(&res)
+}
+
+
+
+pub fn ctb_frombytes<'de, D>(deserializer: D) -> Result<CiphertextBox, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let buf = String::deserialize(deserializer)?;
+
+    Ok(unsafe { CiphertextBox::from_bytes(buf.as_bytes(), &get_cl()).unwrap() })
+}
+
+
 ///   instance = (g_1,g,[y_1..y_n], [A_0..A_{t-1}], R, [C_1..C_n])
 ///   g_1 is the generator of G1
 ///   g is the result of get_g function
+#[serde_nested]
+#[derive(Serialize, Deserialize)]
 pub struct SharingInstance {
+    #[serde(serialize_with = "ecp_tobytes", deserialize_with = "ecp_frombytes")]
     pub g1_gen: ECP,
+    #[serde(serialize_with = "ecp_tobytes", deserialize_with = "ecp_frombytes")]
     pub g: ECP,
+    #[serde_nested(sub="PublicKeyBox", serde(serialize_with = "pkb_tobytes", deserialize_with = "pkb_frombytes"))]
     pub public_keys: Vec<PublicKeyBox>,
+    #[serde_nested(sub="ECP", serde(serialize_with = "ecp_tobytes", deserialize_with = "ecp_frombytes"))]
     pub public_coefficients: Vec<ECP>,
+    #[serde(serialize_with = "qfi_to_bytes", deserialize_with = "qfi_from_bytes")]
     pub randomizer: QFIBox,
+    #[serde_nested(sub="CiphertextBox", serde(serialize_with = "ctb_tobytes", deserialize_with = "ctb_frombytes"))]
     pub ciphertexts: Vec<CiphertextBox>,
 }
 
