@@ -11,7 +11,7 @@ use serde_nested_with::serde_nested;
  where
      S: serde::Serializer,
  {
-     let mut res = [0u8; 48];
+     let mut res = [0u8; 49];
      v.tobytes(&mut res, true);
 
      serializer.serialize_bytes(&res)

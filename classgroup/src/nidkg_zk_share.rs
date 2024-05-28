@@ -33,7 +33,7 @@ fn ecp_tobytes<S>(v: &ECP, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
-    let mut res = [0u8; 48];
+    let mut res = [0u8; 49];
     v.tobytes(&mut res, true);
 
     serializer.serialize_bytes(&res)
@@ -114,7 +114,7 @@ fn big_tobytes<S>(v: &BIG, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
-    let mut res = [0u8; 48];
+    let mut res = [0u8; 49];
 
     v.tobytes(&mut res);
 
