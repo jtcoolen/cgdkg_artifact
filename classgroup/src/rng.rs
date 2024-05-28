@@ -42,13 +42,11 @@ impl RAND for RAND_ChaCha20 {
 #[allow(non_camel_case_types)]
 #[derive(Debug)]
 pub struct RAND_OsRng {
-    os_rng: OsRng,
 }
 
 impl RAND_OsRng {
     pub fn new() -> Self {
         RAND_OsRng {
-            os_rng: OsRng,
         }
     }
 }
@@ -60,7 +58,7 @@ impl RAND for RAND_OsRng {
     fn getbyte(&mut self) -> u8 {
         let mut random_byte: [u8; 1] = [0; 1];
         // `fill_bytes()` with 1-byte buffer consumes 4 bytes of the random stream.
-        self.os_rng.fill_bytes(&mut random_byte);
+        OsRng.fill_bytes(&mut random_byte);
         random_byte[0]
     }
 }
