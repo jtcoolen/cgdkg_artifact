@@ -45,6 +45,14 @@ pub struct RAND_OsRng {
     os_rng: OsRng,
 }
 
+impl RAND_OsRng {
+    pub fn new() -> Self {
+        RAND_OsRng {
+            os_rng: OsRng,
+        }
+    }
+}
+
 impl RAND for RAND_OsRng {
     fn  seed(&mut self, _rawlen: usize, raw: &[u8]) {
     }
