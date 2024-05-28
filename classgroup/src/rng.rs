@@ -4,6 +4,8 @@ use rand_chacha::{
     ChaCha20Rng,
 };
 //use rand_chacha::rand_core::RngCore;
+use rand::rngs::OsRng;
+use rand::RngCore as RdRngCore;
 
 /// A random number generator based on the ChaCha20 stream cipher
 #[allow(non_camel_case_types)]
@@ -36,6 +38,25 @@ impl RAND for RAND_ChaCha20 {
         random_byte[0]
     }
 }
+
+#[allow(non_camel_case_types)]
+#[derive(Debug)]
+pub struct RAND_OsRng {
+    os_rng: OsRng,
+}
+
+impl RAND for RAND_OsRng {
+    fn  seed(&mut self, _rawlen: usize, raw: &[u8]) {
+    }
+
+    fn getbyte(&mut self) -> u8 {
+        let mut random_byte: [u8; 1] = [0; 1];
+        // `fill_bytes()` with 1-byte buffer consumes 4 bytes of the random stream.
+        self.os_rng.fill_bytes(&mut random_byte);
+        random_byte[0]
+    }
+}
+
 
 
 /*pub trait RngCore {
