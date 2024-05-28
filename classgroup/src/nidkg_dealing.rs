@@ -1,5 +1,7 @@
 use crate::errors::{InternalError, InvalidArgumentError, MalformedPublicKeyError};
 use crate::nidkg_zk_share::ZkProofSharing;
+use serde::{Serialize, Deserialize};
+use serde_nested_with::serde_nested;
 use crate::public_coefficients::PublicCoefficients;
 use bicycl::{CiphertextBox, SecretKeyBox};
 use crate::scalar_bls12381::field_add_assign;
@@ -17,9 +19,33 @@ use cpp_core::CppBox;
 
 const CG_DKG_STR: &str = "cgdkg";
 
-#[derive(Clone, Debug)]
+use crate::utils::get_cl;
+
+fn ctb_tobytes<S>(v: &CiphertextBox, serializer: S) -> Result<S::Ok, S::Error>
+ where
+     S: serde::Serializer,
+ {
+     let res = unsafe { v.to_bytes() };
+
+     serializer.serialize_bytes(&res)
+ }
+
+
+
+ fn ctb_frombytes<'de, D>(deserializer: D) -> Result<CiphertextBox, D::Error>
+ where
+     D: serde::Deserializer<'de>,
+ {
+     let buf = String::deserialize(deserializer)?;
+
+     Ok(unsafe { CiphertextBox::from_bytes(buf.as_bytes(), &get_cl()).unwrap() })
+ }
+
+#[serde_nested]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Dealing {
     pub public_coefficients: PublicCoefficients,
+    #[serde_nested(sub="CiphertextBox", serde(serialize_with = "ctb_tobytes", deserialize_with = "ctb_frombytes"))]
     pub ciphertexts: Vec<CiphertextBox>,
     pub zk_proof_correct_sharing: ZkProofSharing,
 }
@@ -78,17 +104,13 @@ pub fn aggregate_dealings(c: &CppBox<CLHSMqk>,
         &get_cgdkg_zk_share_g(&CG_DKG_STR.to_string())
     );
 
-    println!("BEFORE ACCU");
     for dealing in dealings {
         if accumulated_public_polynomial.coefficients.is_empty() {
-            println!("NOOOOO");
             accumulated_public_polynomial = dealing.public_coefficients.clone();
         } else {
-            println!("EXCELLENT");
             accumulated_public_polynomial += dealing.public_coefficients.clone();
         }
     }
-    println!("AFTER ACCU");
 
     let my_shares: Result<Vec<BIG>, ()> = dealings
         .iter()

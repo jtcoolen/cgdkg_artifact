@@ -2,13 +2,40 @@ use std::borrow::Borrow;
 use std::ops;
 use miracl_core_bls12381::bls12381::{ecp::ECP, big::BIG, pair};
 use crate::polynomial::Polynomial;
+use serde::{Serialize, Deserialize};
+use serde_nested_with::serde_nested;
+
+
+
+ fn ecp_tobytes<S>(v: &ECP, serializer: S) -> Result<S::Ok, S::Error>
+ where
+     S: serde::Serializer,
+ {
+     let mut res = [0u8; 48];
+     v.tobytes(&mut res, true);
+
+     serializer.serialize_bytes(&res)
+ }
+
+
+ fn ecp_frombytes<'de, D>(deserializer: D) -> Result<ECP, D::Error>
+ where
+     D: serde::Deserializer<'de>,
+ {
+     let buf = String::deserialize(deserializer)?;
+
+     Ok(ECP::frombytes(buf.as_bytes()))
+ }
 
 /// Given a polynomial with secret coefficients <a0, ..., ak> the public
 /// coefficients are the public keys <A0, ..., Ak> corresponding to those secret
 /// keys.
-#[derive(Clone, Debug)]
+#[serde_nested]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PublicCoefficients {
+    #[serde(serialize_with = "ecp_tobytes", deserialize_with = "ecp_frombytes")]
     pub g: ECP,
+    #[serde_nested(sub="ECP", serde(serialize_with = "ecp_tobytes", deserialize_with = "ecp_frombytes"))]
     pub coefficients: Vec<ECP>,
 }
 

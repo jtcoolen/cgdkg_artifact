@@ -101,13 +101,55 @@ where
 
 
 
-pub fn ctb_frombytes<'de, D>(deserializer: D) -> Result<CiphertextBox, D::Error>
+fn ctb_frombytes<'de, D>(deserializer: D) -> Result<CiphertextBox, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
     let buf = String::deserialize(deserializer)?;
 
     Ok(unsafe { CiphertextBox::from_bytes(buf.as_bytes(), &get_cl()).unwrap() })
+}
+
+fn big_tobytes<S>(v: &BIG, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let mut res = [0u8; 48];
+
+    v.tobytes(&mut res);
+
+    serializer.serialize_bytes(&res)
+}
+
+
+
+fn big_frombytes<'de, D>(deserializer: D) -> Result<BIG, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let buf = String::deserialize(deserializer)?;
+
+    Ok(BIG::frombytes(buf.as_bytes()))
+}
+
+fn mpz_tobytes<S>(v: &MpzBox, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let res = unsafe { v.to_bytes() };
+
+    serializer.serialize_bytes(&res)
+}
+
+
+
+fn mpz_frombytes<'de, D>(deserializer: D) -> Result<MpzBox, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let buf = String::deserialize(deserializer)?;
+
+    Ok(unsafe { MpzBox::from_bytes(buf.as_bytes()).unwrap() })
 }
 
 
@@ -140,12 +182,17 @@ pub struct SharingWitness {
 }
 
 /// Zero-knowledge proof of sharing.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ZkProofSharing {
+    #[serde(serialize_with = "qfi_to_bytes", deserialize_with = "qfi_from_bytes")]
     pub ff: QFIBox,
+    #[serde(serialize_with = "ecp_tobytes", deserialize_with = "ecp_frombytes")]
     pub aa: ECP,
+    #[serde(serialize_with = "qfi_to_bytes", deserialize_with = "qfi_from_bytes")]
     pub yy: QFIBox,
+    #[serde(serialize_with = "mpz_tobytes", deserialize_with = "mpz_frombytes")]
     pub z_r: MpzBox,
+    #[serde(serialize_with = "big_tobytes", deserialize_with = "big_frombytes")]
     pub z_alpha: BIG,
 }
 
