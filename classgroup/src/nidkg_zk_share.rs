@@ -157,7 +157,7 @@ where
 ///   g_1 is the generator of G1
 ///   g is the result of get_g function
 #[serde_nested]
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SharingInstance {
     #[serde(serialize_with = "ecp_tobytes", deserialize_with = "ecp_frombytes")]
     pub g1_gen: ECP,
