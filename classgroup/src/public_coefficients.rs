@@ -22,9 +22,9 @@ use serde_nested_with::serde_nested;
  where
      D: serde::Deserializer<'de>,
  {
-     let buf = String::deserialize(deserializer)?;
+     let buf = Deserialize::deserialize(deserializer)?;
 
-     Ok(ECP::frombytes(buf.as_bytes()))
+     Ok(ECP::frombytes(buf))
  }
 
 /// Given a polynomial with secret coefficients <a0, ..., ak> the public
