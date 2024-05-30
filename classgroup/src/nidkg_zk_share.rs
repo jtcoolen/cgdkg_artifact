@@ -46,7 +46,7 @@ where
 {
     let buf = Deserialize::deserialize(deserializer)?;
 
-    Ok(ECP::frombytes(buf))
+    Ok(ECP::frombytes(&buf))
 }
 
 fn qfi_to_bytes<S>(v: &QFIBox, serializer: S) -> Result<S::Ok, S::Error>
@@ -67,7 +67,7 @@ where
 {
     let buf = Deserialize::deserialize(deserializer)?;
 
-    Ok(unsafe { QFIBox::from_bytes(buf, &get_cl()).unwrap() })
+    Ok(unsafe { QFIBox::from_bytes(&buf, &get_cl()).unwrap() })
 }
 
 fn pkb_tobytes<S>(v: &PublicKeyBox, serializer: S) -> Result<S::Ok, S::Error>
@@ -87,7 +87,7 @@ where
 {
     let buf = Deserialize::deserialize(deserializer)?;
 
-    Ok(unsafe { PublicKeyBox::from_bytes(buf, &get_cl()).unwrap() })
+    Ok(unsafe { PublicKeyBox::from_bytes(&buf, &get_cl()).unwrap() })
 }
 
 fn ctb_tobytes<S>(v: &CiphertextBox, serializer: S) -> Result<S::Ok, S::Error>
@@ -107,7 +107,7 @@ where
 {
     let buf = Deserialize::deserialize(deserializer)?;
 
-    Ok(unsafe { CiphertextBox::from_bytes(buf, &get_cl()).unwrap() })
+    Ok(unsafe { CiphertextBox::from_bytes(&buf, &get_cl()).unwrap() })
 }
 
 fn big_tobytes<S>(v: &BIG, serializer: S) -> Result<S::Ok, S::Error>
@@ -129,7 +129,7 @@ where
 {
     let buf = Deserialize::deserialize(deserializer)?;
 
-    Ok(BIG::frombytes(buf))
+    Ok(BIG::frombytes(&buf))
 }
 
 fn mpz_tobytes<S>(v: &MpzBox, serializer: S) -> Result<S::Ok, S::Error>
@@ -149,7 +149,7 @@ where
 {
     let buf = Deserialize::deserialize(deserializer)?;
 
-    Ok(unsafe { MpzBox::from_bytes(buf).unwrap() })
+    Ok(unsafe { MpzBox::from_bytes(&buf).unwrap() })
 }
 
 

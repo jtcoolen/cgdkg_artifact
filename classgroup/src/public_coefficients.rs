@@ -24,7 +24,7 @@ use serde_nested_with::serde_nested;
  {
      let buf = Deserialize::deserialize(deserializer)?;
 
-     Ok(ECP::frombytes(buf))
+     Ok(ECP::frombytes(&buf))
  }
 
 /// Given a polynomial with secret coefficients <a0, ..., ak> the public
