@@ -36,9 +36,9 @@ fn ctb_tobytes<S>(v: &CiphertextBox, serializer: S) -> Result<S::Ok, S::Error>
  where
      D: serde::Deserializer<'de>,
  {
-     let buf = String::deserialize(deserializer)?;
+     let buf = Deserialize::deserialize(deserializer)?;
 
-     Ok(unsafe { CiphertextBox::from_bytes(buf.as_bytes(), &get_cl()).unwrap() })
+     Ok(unsafe { CiphertextBox::from_bytes(buf, &get_cl()).unwrap() })
  }
 
 #[serde_nested]
