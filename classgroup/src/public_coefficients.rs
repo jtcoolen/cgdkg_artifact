@@ -22,7 +22,7 @@ use serde_nested_with::serde_nested;
  where
      D: serde::Deserializer<'de>,
  {
-     let buf = Deserialize::deserialize(deserializer)?;
+     let buf:Vec<u8> = Deserialize::deserialize(deserializer)?;
 
      Ok(ECP::frombytes(&buf))
  }

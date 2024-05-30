@@ -44,7 +44,7 @@ pub fn ecp_frombytes<'de, D>(deserializer: D) -> Result<ECP, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let buf = Deserialize::deserialize(deserializer)?;
+    let buf: Vec<u8> = Deserialize::deserialize(deserializer)?;
 
     Ok(ECP::frombytes(&buf))
 }
@@ -65,7 +65,7 @@ pub fn qfi_from_bytes<'de, D>(deserializer: D) -> Result<QFIBox, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let buf = Deserialize::deserialize(deserializer)?;
+    let buf: Vec<u8> = Deserialize::deserialize(deserializer)?;
 
     Ok(unsafe { QFIBox::from_bytes(&buf, &get_cl()).unwrap() })
 }
@@ -85,7 +85,7 @@ pub fn pkb_frombytes<'de, D>(deserializer: D) -> Result<PublicKeyBox, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let buf = Deserialize::deserialize(deserializer)?;
+    let buf: Vec<u8> = Deserialize::deserialize(deserializer)?;
 
     Ok(unsafe { PublicKeyBox::from_bytes(&buf, &get_cl()).unwrap() })
 }
@@ -105,7 +105,7 @@ fn ctb_frombytes<'de, D>(deserializer: D) -> Result<CiphertextBox, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let buf = Deserialize::deserialize(deserializer)?;
+    let buf: Vec<u8> = Deserialize::deserialize(deserializer)?;
 
     Ok(unsafe { CiphertextBox::from_bytes(&buf, &get_cl()).unwrap() })
 }
@@ -127,7 +127,7 @@ fn big_frombytes<'de, D>(deserializer: D) -> Result<BIG, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let buf = Deserialize::deserialize(deserializer)?;
+    let buf: Vec<u8> = Deserialize::deserialize(deserializer)?;
 
     Ok(BIG::frombytes(&buf))
 }
@@ -147,7 +147,7 @@ fn mpz_frombytes<'de, D>(deserializer: D) -> Result<MpzBox, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let buf = Deserialize::deserialize(deserializer)?;
+    let buf: Vec<u8> = Deserialize::deserialize(deserializer)?;
 
     Ok(unsafe { MpzBox::from_bytes(&buf).unwrap() })
 }
